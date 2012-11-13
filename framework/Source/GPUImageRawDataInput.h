@@ -13,6 +13,9 @@
 
 // Initialization and teardown
 - (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize;
+- (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize pixelFormat:(GLint)pixelFormat;
+
+@property (readwrite, nonatomic) GLint pixelFormat;
 
 // Image rendering
 - (void)updateDataFromBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize;
