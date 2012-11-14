@@ -2,7 +2,7 @@
 
 // The bytes passed into this input are not copied or retained, but you are free to deallocate them after they are used by this filter.
 // The bytes are uploaded and stored within a texture, so nothing is kept locally.
-// Input bytes are assumed to be in BGRA format.
+// The default format for input bytes is GL_BGRA, unless specified with pixelFormat:
 
 @interface GPUImageRawDataInput : GPUImageOutput
 {
@@ -15,6 +15,8 @@
 - (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize;
 - (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize pixelFormat:(GLint)pixelFormat;
 
+/** Pixel format of the input data (eg. GL_RGBA).
+ */
 @property (readwrite, nonatomic) GLint pixelFormat;
 
 // Image rendering
