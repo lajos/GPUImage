@@ -215,51 +215,6 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
     return cgImageFromBytes;
 }
 
-- (NSData *)newDataFromCurrentlyProcessedOutput:(BOOL)releaseWhenDone;
-{
-    __block NSData *dataFromBytes;
-	
-    runSynchronouslyOnVideoProcessingQueue(^{
-        [GPUImageOpenGLESContext useImageProcessingContext];
-        
-        CGSize currentFBOSize = [self sizeOfFBO];
-        NSUInteger totalBytesForImage = (int)currentFBOSize.width * (int)currentFBOSize.height * 4;
-        // It appears that the width of a texture must be padded out to be a multiple of 8 (32 bytes) if reading from it using a texture cache
-        NSUInteger paddedWidthOfImage = CVPixelBufferGetBytesPerRow(renderTarget) / 4.0;
-        NSUInteger paddedBytesForImage = paddedWidthOfImage * (int)currentFBOSize.height * 4;
-        
-        GLubyte *rawImagePixels;
-        
-		//        CGDataProviderRef dataProvider;
-        if ([GPUImageOpenGLESContext supportsFastTextureUpload] && preparedToCaptureImage)
-        {
-            //        glFlush();
-            glFinish();
-            CFRetain(renderTarget); // I need to retain the pixel buffer here and release in the data source callback to prevent its bytes from being prematurely deallocated during a photo write operation
-            CVPixelBufferLockBaseAddress(renderTarget, 0);
-            self.preventRendering = YES; // Locks don't seem to work, so prevent any rendering to the filter which might overwrite the pixel buffer data until done processing
-            rawImagePixels = (GLubyte *)CVPixelBufferGetBaseAddress(renderTarget);
-			//            dataProvider = CGDataProviderCreateWithData((__bridge_retained void*)self, rawImagePixels, paddedBytesForImage, dataProviderUnlockCallback);
-			dataFromBytes = [NSData dataWithBytes:rawImagePixels length:paddedBytesForImage];
-        }
-        else
-        {
-            [self setOutputFBO];
-            rawImagePixels = (GLubyte *)malloc(totalBytesForImage);
-            glReadPixels(0, 0, (int)currentFBOSize.width, (int)currentFBOSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
-			//            dataProvider = CGDataProviderCreateWithData(NULL, rawImagePixels, totalBytesForImage, dataProviderReleaseCallback);
-			dataFromBytes = [NSData dataWithBytes:rawImagePixels length:totalBytesForImage];
-			free(rawImagePixels);
-        }
-        
-        // Capture image with current device orientation
-		//        CGDataProviderRelease(dataProvider);
-    });
-	
-    return dataFromBytes;
-}
-
-
 - (UIImage *)imageFromCurrentlyProcessedOutputWithOrientation:(UIImageOrientation)imageOrientation;
 {
     CGImageRef cgImageFromBytes = [self newCGImageFromCurrentlyProcessedOutputWithOrientation:imageOrientation];

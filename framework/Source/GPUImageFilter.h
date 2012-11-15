@@ -135,6 +135,4 @@ typedef struct GPUMatrix3x3 GPUMatrix3x3;
 - (void)setFloatArray:(GLfloat *)arrayValue length:(GLsizei)arrayLength forUniform:(GLint)uniform program:(GLProgram *)shaderProgram;
 - (void)setInteger:(GLint)intValue forUniform:(GLint)uniform program:(GLProgram *)shaderProgram;
 
-- (NSData *)newDataFromCurrentlyProcessedOutput:(BOOL)releaseWhenDone;
-
 @end
